@@ -12,7 +12,42 @@ import json
 import os
 from typing import List, Dict, Any, Optional
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import IpBlocked, TranscriptsDisabled, VideoUnavailable
+try:
+    # Try newer API (v0.6.0+)
+    from youtube_transcript_api._errors import (
+        TranscriptsDisabled, 
+        VideoUnavailable,
+        NoTranscriptFound,
+        NotTranslatable,
+        TranslationLanguageNotAvailable,
+        CookiePathInvalid,
+        CookiesInvalid,
+        FailedToCreateConsentCookie,
+        NoTranscriptAvailable,
+        YouTubeRequestFailed
+    )
+except ImportError:
+    # Fallback for older versions - create dummy classes
+    class TranscriptsDisabled(Exception):
+        pass
+    class VideoUnavailable(Exception):
+        pass
+    class NoTranscriptFound(Exception):
+        pass
+    class NotTranslatable(Exception):
+        pass
+    class TranslationLanguageNotAvailable(Exception):
+        pass
+    class CookiePathInvalid(Exception):
+        pass
+    class CookiesInvalid(Exception):
+        pass
+    class FailedToCreateConsentCookie(Exception):
+        pass
+    class NoTranscriptAvailable(Exception):
+        pass
+    class YouTubeRequestFailed(Exception):
+        pass
 from youtube_transcript_api.formatters import JSONFormatter
 
 # Set UTF-8 encoding for stdout to handle Unicode characters
@@ -101,41 +136,49 @@ def extract_transcript(video_id: str) -> Dict[str, Any]:
                 
         except Exception as e:
             error_message = str(e)
+            error_type = type(e).__name__
             
             # Check for specific error types
-            if 'IpBlocked' in type(e).__name__ or 'IP' in error_message:
-                return {
-                    'success': False,
-                    'error': 'YouTube has temporarily blocked your IP address from accessing transcripts. This usually happens due to too many requests. Please wait 15-30 minutes and try again, or restart your router to get a new IP address.',
-                    'error_type': 'IP_BLOCKED',
-                    'video_id': video_id
-                }
-            elif 'TranscriptsDisabled' in type(e).__name__:
+            if 'TranscriptsDisabled' in error_type:
                 return {
                     'success': False,
                     'error': 'This video does not have captions/subtitles enabled.',
                     'error_type': 'NO_TRANSCRIPT',
                     'video_id': video_id
                 }
-            elif 'VideoUnavailable' in type(e).__name__:
+            elif 'VideoUnavailable' in error_type:
                 return {
                     'success': False,
                     'error': 'This video is unavailable, private, or does not exist.',
                     'error_type': 'VIDEO_UNAVAILABLE',
                     'video_id': video_id
                 }
-            elif 'No transcripts were found' in error_message or 'language codes' in error_message:
-                # Check if it's because only non-English transcripts are available
+            elif 'NoTranscriptFound' in error_type or 'NoTranscriptAvailable' in error_type:
                 return {
                     'success': False,
                     'error': 'Currently, only English videos are supported. This video does not have English captions/subtitles available. Please try a video with English captions.',
                     'error_type': 'NON_ENGLISH_TRANSCRIPT',
                     'video_id': video_id
                 }
+            elif 'No transcripts were found' in error_message or 'language codes' in error_message:
+                return {
+                    'success': False,
+                    'error': 'Currently, only English videos are supported. This video does not have English captions/subtitles available. Please try a video with English captions.',
+                    'error_type': 'NON_ENGLISH_TRANSCRIPT',
+                    'video_id': video_id
+                }
+            elif '429' in error_message or 'Too Many Requests' in error_message or 'rate limit' in error_message.lower():
+                return {
+                    'success': False,
+                    'error': 'YouTube has temporarily blocked transcript requests due to too many requests. Please wait 15-30 minutes and try again.',
+                    'error_type': 'RATE_LIMITED',
+                    'video_id': video_id
+                }
             else:
                 return {
                     'success': False,
                     'error': f'Could not retrieve English transcript: {error_message}',
+                    'error_type': 'UNKNOWN_ERROR',
                     'video_id': video_id
                 }
         
