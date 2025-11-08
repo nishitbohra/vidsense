@@ -6,6 +6,7 @@ import SummaryDisplay from '../components/SummaryDisplay'
 import SentimentChart from '../components/SentimentChart'
 import TopicCloud from '../components/TopicCloud'
 import SearchInterface from '../components/SearchInterface'
+import { analyzeVideo } from '@/lib/api'
 
 interface AnalysisResult {
   video_id: string
@@ -33,19 +34,7 @@ export default function Dashboard() {
     setAnalysisResult(null)
 
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ youtube_url: youtubeUrl }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Analysis failed: ${response.statusText}`)
-      }
-
-      const result = await response.json()
+      const result = await analyzeVideo(youtubeUrl)
       setAnalysisResult(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis')
