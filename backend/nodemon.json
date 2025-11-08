@@ -1,0 +1,17 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": [
+    "src/**/*.spec.ts",
+    "node_modules",
+    "dist",
+    "python/**/*.pyc",
+    "python/**/__pycache__",
+    "python/**/*.json",
+    "python/**/temp_*.json",
+    "*.log",
+    ".git"
+  ],
+  "exec": "ts-node src/index.ts",
+  "delay": "1000"
+}

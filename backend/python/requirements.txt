@@ -1,0 +1,22 @@
+# YouTube and Video Processing
+youtube-transcript-api==0.6.1
+
+# AI/ML Models and APIs
+groq>=0.33.0
+transformers>=4.30.0
+sentence-transformers>=2.2.0
+torch>=2.0.0
+numpy>=1.24.0
+
+# Vector Database
+chromadb>=0.4.0
+
+# Text Processing and NLP
+nltk>=3.8.0
+
+# Utilities
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Development and Debugging
+tqdm==4.66.1

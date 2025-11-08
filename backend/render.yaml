@@ -1,0 +1,23 @@
+# Render Blueprint for VidSense Backend
+# This file is optional but helps with automated deployments
+
+services:
+  - type: web
+    name: vidsense-backend
+    runtime: node
+    buildCommand: npm install && cd python && pip install -r requirements.txt && cd .. && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CHROMA_PERSIST_DIR
+        value: /opt/render/project/src/chromadb
+      - key: MONGODB_URI
+        sync: false  # Set this in Render dashboard
+      - key: GROQ_API_KEY
+        sync: false  # Set this in Render dashboard
+      - key: FRONTEND_URL
+        sync: false  # Set this in Render dashboard
+    healthCheckPath: /api/health

@@ -1,0 +1,27 @@
+﻿node_modules/
+.env
+.env.local
+.next/
+dist/
+build/
+*.log
+chroma_db/
+chromadb/
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+.idea/
+coverage/
+.nyc_output/
+
+# ChromaDB local files
+backend/chromadb/
+backend/python/chromadb/
+
+# Temporary Python output files
+backend/python/temp_*.json
+backend/python/test_*.json
