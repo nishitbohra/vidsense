@@ -17,9 +17,12 @@ const nextConfig = {
   experimental: {
     proxyTimeout: 300000, // 5 minutes
   },
-  // Required for Render static site deployment
-  output: 'standalone',
-  distDir: '.next',
+  // For Render static site deployment - use export mode
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+  trailingSlash: true,
 }
 
 module.exports = nextConfig
