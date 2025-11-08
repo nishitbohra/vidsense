@@ -116,23 +116,32 @@ def extract_transcript(video_id: str) -> Dict[str, Any]:
         detected_language = 'en'
         
         try:
-            # Try to get English transcript
-            api = YouTubeTranscriptApi()
-            fetched = api.fetch(video_id, languages=['en'])
-            
-            # Get snippets from fetched transcript
-            transcript_list = [
-                {
-                    'text': snippet.text,
-                    'start': snippet.start,
-                    'duration': snippet.duration
-                }
-                for snippet in fetched.snippets
-            ]
-            
-            # Detect language
-            if hasattr(fetched, 'language_code'):
-                detected_language = fetched.language_code
+            # Try OLD API first (v0.5.x and below) - instance method with .fetch()
+            # This is what works on local systems
+            try:
+                api = YouTubeTranscriptApi()
+                fetched = api.fetch(video_id, languages=['en'])
+                
+                # Convert old format to new format
+                transcript_list = [
+                    {
+                        'text': snippet.text,
+                        'start': snippet.start,
+                        'duration': snippet.duration
+                    }
+                    for snippet in fetched.snippets
+                ]
+                
+                # Detect language
+                if hasattr(fetched, 'language_code'):
+                    detected_language = fetched.language_code
+                    
+            except (AttributeError, TypeError):
+                # Fallback to NEW API (v0.6.0+) - static method
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+                detected_language = 'en'
+                # transcript_list is already in the correct format:
+                # [{'text': '...', 'start': 0.0, 'duration': 2.5}, ...]
                 
         except Exception as e:
             error_message = str(e)

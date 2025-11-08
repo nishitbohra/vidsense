@@ -1,5 +1,6 @@
-# YouTube and Video Processing
-youtube-transcript-api==0.6.1
+# YouTube and Video Processing  
+# Pin to exact version 1.2.3 that works with both old and new API patterns
+youtube-transcript-api==1.2.3
 
 # AI/ML Models and APIs
 groq>=0.33.0
