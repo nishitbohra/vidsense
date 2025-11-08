@@ -17,6 +17,9 @@ const nextConfig = {
   experimental: {
     proxyTimeout: 300000, // 5 minutes
   },
+  // Required for Render static site deployment
+  output: 'standalone',
+  distDir: '.next',
 }
 
 module.exports = nextConfig
