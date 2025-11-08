@@ -85,10 +85,22 @@ router.post('/', async (req: Request, res: Response) => {
     console.log('Extracting transcript...')
     const transcriptResult = await pythonBridge.extractTranscript(videoId)
     
+    // Log detailed error information for debugging
     if (!transcriptResult.success || !transcriptResult.data?.success) {
+      console.error('Transcript extraction failed:')
+      console.error('Success:', transcriptResult.success)
+      console.error('Error:', transcriptResult.error)
+      console.error('Data:', JSON.stringify(transcriptResult.data))
+      console.error('Stderr:', transcriptResult.stderr)
+      console.error('Stdout:', transcriptResult.stdout)
+      
       return res.status(400).json({
         error: 'Transcript Extraction Failed',
-        message: transcriptResult.error || transcriptResult.data?.error || 'Could not extract transcript from video'
+        message: transcriptResult.error || transcriptResult.data?.error || 'Could not extract transcript from video',
+        details: {
+          stderr: transcriptResult.stderr,
+          data_error: transcriptResult.data?.error
+        }
       })
     }
 
