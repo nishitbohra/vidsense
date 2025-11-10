@@ -1,13 +1,16 @@
 ﻿# Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # Environment variables (IMPORTANT - keeps secrets safe)
 .env
 .env.local
-.env.development
-.env.production
-.env.test
+.env.development.local
+.env.test.local
+.env.production.local
 *.env
+!.env.example
 
 # Build outputs
 .next/
@@ -18,10 +21,14 @@ out/
 # Logs
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Databases
 chroma_db/
 chromadb/
+*/chromadb/
 *.sqlite3
 *.db
 
@@ -32,22 +39,42 @@ __pycache__/
 *.pyd
 .Python
 *.so
+.venv/
+venv/
+ENV/
+env/
 
-# IDEs
+# IDEs & Editors
 .DS_Store
 .vscode/
 *.swp
 *.swo
 *~
 .idea/
+*.sublime-project
+*.sublime-workspace
 
 # Testing
 coverage/
 .nyc_output/
 .pytest_cache/
 
-# ChromaDB local files
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS specific
+Thumbs.db
+desktop.ini
+
+# ChromaDB local files (vector database)
 backend/chromadb/
+backend/python/chromadb/
+
+# Deployment artifacts (keep only templates)
+.vercel
+.railway
 backend/python/chromadb/
 
 # Temporary Python output files

@@ -11,6 +11,8 @@ import analyzeRoutes from './routes/analyze'
 import searchRoutes from './routes/search'
 import videoRoutes from './routes/videos'
 import healthRoute from './routes/health'
+import authRoutes from './routes/auth'
+import adminRoutes from './routes/admin'
 
 // Load environment variables
 dotenv.config()
@@ -84,6 +86,8 @@ app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 app.use('/api/health', healthRoute)
 
 // API routes
+app.use('/api/auth', authRoutes)
+app.use('/api/admin', adminRoutes)
 app.use('/api/analyze', analysisLimiter, analyzeRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/videos', videoRoutes)
@@ -95,10 +99,30 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     status: 'running',
     endpoints: {
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        refresh: 'POST /api/auth/refresh',
+        profile: 'GET /api/auth/profile',
+        changePassword: 'PUT /api/auth/change-password'
+      },
+      admin: {
+        users: 'GET /api/admin/users',
+        user: 'GET /api/admin/users/:id',
+        createUser: 'POST /api/admin/users',
+        updateUser: 'PUT /api/admin/users/:id',
+        deleteUser: 'DELETE /api/admin/users/:id',
+        videos: 'GET /api/admin/videos',
+        deleteVideo: 'DELETE /api/admin/videos/:id',
+        analytics: 'GET /api/admin/analytics'
+      },
       analyze: 'POST /api/analyze',
       search: 'POST /api/search',
       videos: 'GET /api/videos',
       videoDetails: 'GET /api/videos/:id',
+      createVideo: 'POST /api/videos',
+      updateVideo: 'PUT /api/videos/:id',
+      deleteVideo: 'DELETE /api/videos/:id',
       health: 'GET /api/health'
     },
     documentation: 'https://github.com/yourusername/vidsense#api-documentation'
@@ -113,10 +137,26 @@ app.use('*', (req, res) => {
     availableRoutes: [
       'GET /',
       'GET /api/health',
+      'POST /api/auth/register',
+      'POST /api/auth/login',
+      'POST /api/auth/refresh',
+      'GET /api/auth/profile',
+      'PUT /api/auth/change-password',
+      'GET /api/admin/users',
+      'POST /api/admin/users',
+      'GET /api/admin/users/:id',
+      'PUT /api/admin/users/:id',
+      'DELETE /api/admin/users/:id',
+      'GET /api/admin/videos',
+      'DELETE /api/admin/videos/:id',
+      'GET /api/admin/analytics',
       'POST /api/analyze',
       'POST /api/search',
       'GET /api/videos',
-      'GET /api/videos/:id'
+      'GET /api/videos/:id',
+      'POST /api/videos',
+      'PUT /api/videos/:id',
+      'DELETE /api/videos/:id'
     ]
   })
 })

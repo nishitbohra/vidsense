@@ -17,12 +17,13 @@ const nextConfig = {
   experimental: {
     proxyTimeout: 300000, // 5 minutes
   },
-  // For Render static site deployment - use export mode
-  output: 'export',
-  images: {
-    unoptimized: true,
-  },
-  trailingSlash: true,
+  // Enable static export only when building for production deployment
+  // Uncomment the following lines for static site generation:
+  // output: 'export',
+  // images: {
+  //   unoptimized: true,
+  // },
+  // trailingSlash: true,
 }
 
 module.exports = nextConfig

@@ -2,6 +2,7 @@ import express from 'express'
 import Video from '../models/Video'
 import Summary from '../models/Summary'
 import Sentiment from '../models/Sentiment'
+import { authenticate } from '../middleware/auth'
 
 const router = express.Router()
 
@@ -294,6 +295,184 @@ router.delete('/:videoId', async (req, res) => {
       message: 'Video and all associated data deleted successfully',
       video_id: videoId,
       title: video.title
+    })
+
+  } catch (error) {
+    console.error('Delete video error:', error)
+    res.status(500).json({
+      error: 'Failed to delete video',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+// Update video metadata (title, etc.)
+router.put('/:videoId', async (req, res) => {
+  try {
+    const { videoId } = req.params
+    const { title } = req.body
+
+    if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      return res.status(400).json({
+        error: 'Invalid video ID format'
+      })
+    }
+
+    console.log(`Updating video: ${videoId}`)
+
+    const video = await Video.findByVideoId(videoId)
+    if (!video) {
+      return res.status(404).json({
+        error: 'Video not found'
+      })
+    }
+
+    // Update fields
+    if (title) {
+      video.title = title
+      await video.save()
+    }
+
+    res.json({
+      message: 'Video updated successfully',
+      video: {
+        video_id: video.video_id,
+        title: video.title,
+        url: video.url,
+        updated_at: video.updated_at
+      }
+    })
+
+  } catch (error) {
+    console.error('Update video error:', error)
+    res.status(500).json({
+      error: 'Failed to update video',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+// ==================== CRUD OPERATIONS ====================
+
+// Create video
+router.post('/', authenticate, async (req, res) => {
+  try {
+    const { videoId, title, url, channelTitle, description, publishedAt, duration, viewCount, thumbnail } = req.body
+
+    if (!videoId || !title || !url) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'videoId, title, and url are required'
+      })
+    }
+
+    // Check if video already exists
+    const existingVideo = await Video.findByVideoId(videoId)
+    if (existingVideo) {
+      return res.status(409).json({
+        error: 'Video already exists',
+        message: `Video with ID ${videoId} is already in the database`
+      })
+    }
+
+    // Create new video
+    const video = new Video({
+      video_id: videoId,
+      title,
+      url,
+      transcript: []  // Transcript will be added separately via analyze endpoint
+    })
+
+    await video.save()
+
+    res.status(201).json({
+      message: 'Video created successfully',
+      video: {
+        video_id: video.video_id,
+        title: video.title,
+        url: video.url,
+        created_at: video.created_at
+      }
+    })
+
+  } catch (error) {
+    console.error('Create video error:', error)
+    res.status(500).json({
+      error: 'Failed to create video',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+// Update video
+router.put('/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { title, url } = req.body
+
+    const video = await Video.findOne({ video_id: id })
+    
+    if (!video) {
+      return res.status(404).json({
+        error: 'Video not found',
+        message: `Video with ID ${id} not found`
+      })
+    }
+
+    // Update fields
+    if (title) video.title = title
+    if (url) video.url = url
+
+    await video.save()
+
+    res.json({
+      message: 'Video updated successfully',
+      video: {
+        video_id: video.video_id,
+        title: video.title,
+        url: video.url,
+        updated_at: video.updated_at
+      }
+    })
+
+  } catch (error) {
+    console.error('Update video error:', error)
+    res.status(500).json({
+      error: 'Failed to update video',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+// Delete video
+router.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const video = await Video.findOne({ video_id: id })
+    
+    if (!video) {
+      return res.status(404).json({
+        error: 'Video not found',
+        message: `Video with ID ${id} not found`
+      })
+    }
+
+    // Delete associated data
+    const [summariesDeleted, sentimentsDeleted] = await Promise.all([
+      Summary.deleteMany({ video_id: id }),
+      Sentiment.deleteMany({ video_id: id })
+    ])
+
+    // Delete video
+    await Video.deleteOne({ video_id: id })
+
+    res.json({
+      message: 'Video and associated data deleted successfully',
+      deletedCounts: {
+        summaries: summariesDeleted.deletedCount,
+        sentiments: sentimentsDeleted.deletedCount
+      }
     })
 
   } catch (error) {

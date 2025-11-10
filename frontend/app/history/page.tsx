@@ -239,6 +239,13 @@ export default function HistoryPage() {
 
               {/* Actions */}
               <div className="flex gap-2">
+                <Link
+                  href={`/videos/${video.video_id}`}
+                  className="flex-1 btn btn-primary text-xs flex items-center justify-center"
+                >
+                  <FileText className="h-3 w-3 mr-1" />
+                  View Details
+                </Link>
                 <a
                   href={video.url}
                   target="_blank"

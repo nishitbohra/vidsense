@@ -42,7 +42,6 @@ const VideoSchema = new Schema<IVideo>({
     type: String,
     required: true,
     unique: true,
-    index: true,
     validate: {
       validator: function(v: string) {
         return /^[a-zA-Z0-9_-]{11}$/.test(v)

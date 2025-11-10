@@ -10,6 +10,9 @@ interface Environment {
   GROQ_API_KEY: string
   FRONTEND_URL: string
   CHROMA_PERSIST_DIR: string
+  JWT_SECRET: string
+  JWT_REFRESH_SECRET: string
+  JWT_EXPIRES_IN: string
 }
 
 const getEnvVar = (name: string, defaultValue?: string): string => {
@@ -37,6 +40,9 @@ export const env: Environment = {
   GROQ_API_KEY: getEnvVar('GROQ_API_KEY'),
   FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
   CHROMA_PERSIST_DIR: getEnvVar('CHROMA_PERSIST_DIR', './chromadb'),
+  JWT_SECRET: getEnvVar('JWT_SECRET', 'your-secret-jwt-key-change-in-production'),
+  JWT_REFRESH_SECRET: getEnvVar('JWT_REFRESH_SECRET', 'your-refresh-secret-jwt-key-change-in-production'),
+  JWT_EXPIRES_IN: getEnvVar('JWT_EXPIRES_IN', '7d'),
 }
 
 // Validate critical environment variables
