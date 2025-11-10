@@ -1,23 +1,28 @@
 # YouTube and Video Processing  
-# Pin to exact version 1.2.3 that works with both old and new API patterns
-youtube-transcript-api==1.2.3
+# Pin to exact version that works reliably with YouTube API
+youtube-transcript-api==0.6.1
+requests>=2.31.0
 
 # AI/ML Models and APIs
-groq>=0.33.0
-transformers>=4.30.0
-sentence-transformers>=2.2.0
-torch>=2.0.0
+groq>=0.4.0
+transformers>=4.35.0
+sentence-transformers>=2.2.2
+torch>=2.1.0
 numpy>=1.24.0
 
 # Vector Database
-chromadb>=0.4.0
+chromadb>=0.4.15
 
 # Text Processing and NLP
-nltk>=3.8.0
+nltk>=3.8.1
 
 # Utilities
-requests>=2.31.0
 python-dotenv>=1.0.0
+tqdm>=4.66.1
 
-# Development and Debugging
-tqdm==4.66.1
+# Additional explicit dependencies for stability
+safetensors>=0.4.0
+huggingface-hub>=0.19.0
+tokenizers>=0.15.0
+pydantic>=2.0.0
+typing-extensions>=4.8.0

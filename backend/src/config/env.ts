@@ -35,7 +35,7 @@ const getEnvNumber = (name: string, defaultValue: number): number => {
 
 export const env: Environment = {
   NODE_ENV: getEnvVar('NODE_ENV', 'development'),
-  PORT: getEnvNumber('PORT', 5000),
+  PORT: getEnvNumber('PORT', 3001),
   MONGODB_URI: getEnvVar('MONGODB_URI'),
   GROQ_API_KEY: getEnvVar('GROQ_API_KEY'),
   FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
